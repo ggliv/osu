@@ -3,9 +3,9 @@
 
 using osu.Game.Rulesets.Mods;
 
-namespace osu.Game.Rulesets.Osu.Mods
+namespace osu.Game.Rulesets.Catch.Mods
 {
-    public class OsuModClearCondition : ModClearCondition
+    public class CatchModClearCondition : ModClearCondition
     {
 
     }
