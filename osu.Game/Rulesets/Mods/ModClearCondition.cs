@@ -39,6 +39,7 @@ namespace osu.Game.Rulesets.Mods
             Default = 0,
             Precision = 0.01,
         };
+
         [SettingSource("Minimum health", "Fail map if your health goes under this value")]
         public BindableNumber<double> MinimumHealth { get; } = new BindableDouble
         {
@@ -48,49 +49,61 @@ namespace osu.Game.Rulesets.Mods
             Precision = 0.1,
         };
 
-        [SettingSource("Maximum imperfect judgements", "Fail map if the number of imperfect judgements goes above this value (set to -1 to diable)")]
+        [SettingSource("Enable judgements condition", "Enable the maximum imperfect judgements condition")]
+        public virtual Bindable<bool> EnableImperfectJudgementCondition { get; } = new BindableBool(false);
+
+        [SettingSource("Maximum imperfect judgements", "Fail map if the number of imperfect judgements goes above this value")]
         public virtual BindableNumber<int> MaximumImperfectJudgements { get; } = new BindableInt
         {
-            MinValue = -1,
+            MinValue = 0,
             MaxValue = 100,
-            Default = -1,
-            Value = -1,
             Precision = 1,
         };
 
-        private List<HitObject> hitObjectsBeforeBreaks = new List<HitObject>();
+        private readonly List<HitObject> hitObjectsBeforeBreaks = new List<HitObject>();
         private HitObject lastHitObjectInBeatmap;
-        private List<JudgementResult> flawedJudgements = new List<JudgementResult>();
+        private readonly List<JudgementResult> flawedJudgements = new List<JudgementResult>();
         private double baseScore;
         private double maxBaseScore;
         private double accuracy => maxBaseScore > 0 ? baseScore / maxBaseScore : 1;
 
         public void ApplyToBeatmap(IBeatmap beatmap)
         {
-            lastHitObjectInBeatmap = beatmap.HitObjects.LastOrDefault();
-
-            for (int i = 0; i < beatmap.HitObjects.Count - 1; i++)
+            switch (CheckingInterval.Value)
             {
-                double inBetweenTime = (beatmap.HitObjects.ElementAtOrDefault(i).GetEndTime() + beatmap.HitObjects.ElementAtOrDefault(i + 1).GetEndTime()) / 2;
-                foreach (BreakPeriod breakPeriod in beatmap.Breaks)
-                    if (breakPeriod.Contains(inBetweenTime))
-                        hitObjectsBeforeBreaks.Add(beatmap.HitObjects.ElementAtOrDefault(i));
+                case ConditionCheckInterval.AtEnd:
+                    lastHitObjectInBeatmap = beatmap.HitObjects.LastOrDefault();
+                    break;
+
+                case ConditionCheckInterval.AtBreak:
+                    for (int i = 0; i < beatmap.HitObjects.Count - 1; i++)
+                    {
+                        double inBetweenTime = (beatmap.HitObjects.ElementAtOrDefault(i).GetEndTime() + beatmap.HitObjects.ElementAtOrDefault(i + 1).StartTime) / 2;
+                        foreach (BreakPeriod breakPeriod in beatmap.Breaks)
+                        {
+                            if (breakPeriod.Contains(inBetweenTime))
+                                hitObjectsBeforeBreaks.Add(beatmap.HitObjects.ElementAtOrDefault(i));
+                        }
+                    }
+                    break;
             }
         }
 
         public ScoreRank AdjustRank(ScoreRank rank, double accuracy) => rank;
+
         protected override bool FailCondition(HealthProcessor healthProcessor, JudgementResult result)
         {
-
             incrementInternalScoresFromJudgementResult(result);
 
-            if (!MaximumImperfectJudgements.IsDefault && judgementIsFlawed(result)) flawedJudgements.Add(result);
+            if (EnableImperfectJudgementCondition.Value && judgementIsFlawed(result))
+                flawedJudgements.Add(result);
 
             switch (CheckingInterval.Value)
             {
                 case ConditionCheckInterval.AtBreak:
                     if (!hitObjectsBeforeBreaks.Contains(result.HitObject)) return false;
                     break;
+
                 case ConditionCheckInterval.AtEnd:
                     if (result.HitObject != lastHitObjectInBeatmap)
                         return false;
@@ -98,8 +111,8 @@ namespace osu.Game.Rulesets.Mods
             }
 
             return healthProcessor.Health.Value * 100 < MinimumHealth.Value
-               || accuracy * 100 < MinimumAccuracy.Value
-               || ((flawedJudgements.Count > MaximumImperfectJudgements.Value) && !MaximumImperfectJudgements.IsDefault); // -1 disables, bad ux
+                || accuracy * 100 < MinimumAccuracy.Value
+                || ((flawedJudgements.Count > MaximumImperfectJudgements.Value) && EnableImperfectJudgementCondition.Value);
         }
 
         private bool judgementIsFlawed(JudgementResult judgement)
@@ -119,7 +132,7 @@ namespace osu.Game.Rulesets.Mods
         {
             Continuously,
             AtBreak,
-            AtEnd,
+            AtEnd, // doesn't make sense to be compatible with `ModEasyWithExtraLives` if you're checking the last hitobject
         }
     }
 }
