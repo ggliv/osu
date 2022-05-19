@@ -58,6 +58,7 @@ namespace osu.Game.Rulesets.Mods
             MinValue = 0,
             MaxValue = 100,
             Precision = 1,
+            Disabled = true,
         };
 
         private readonly List<HitObject> hitObjectsBeforeBreaks = new List<HitObject>();
@@ -66,6 +67,14 @@ namespace osu.Game.Rulesets.Mods
         private double baseScore;
         private double maxBaseScore;
         private double accuracy => maxBaseScore > 0 ? baseScore / maxBaseScore : 1;
+
+        protected ModClearCondition()
+        {
+            EnableImperfectJudgementCondition.ValueChanged += _ =>
+            {
+                MaximumImperfectJudgements.Disabled = !EnableImperfectJudgementCondition.Value;
+            };
+        }
 
         public void ApplyToBeatmap(IBeatmap beatmap)
         {
@@ -136,3 +145,6 @@ namespace osu.Game.Rulesets.Mods
         }
     }
 }
+
+// how should this mod work with `ModEasyWithExtraLives`?
+// should bad judgements be cleared after the life is taken? is that doable?

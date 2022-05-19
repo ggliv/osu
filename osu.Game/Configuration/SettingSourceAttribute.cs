@@ -98,9 +98,12 @@ namespace osu.Game.Configuration
                     continue;
                 }
 
+                bool valueStartsDisabled = ((IBindable)value).Disabled;
+
                 switch (value)
                 {
                     case BindableNumber<float> bNumber:
+                        bNumber.Disabled = false;
                         yield return new SettingsSlider<float>
                         {
                             LabelText = attr.Label,
@@ -108,10 +111,11 @@ namespace osu.Game.Configuration
                             Current = bNumber,
                             KeyboardStep = 0.1f,
                         };
-
+                        bNumber.Disabled = valueStartsDisabled;
                         break;
 
                     case BindableNumber<double> bNumber:
+                        bNumber.Disabled = false;
                         yield return new SettingsSlider<double>
                         {
                             LabelText = attr.Label,
@@ -119,37 +123,40 @@ namespace osu.Game.Configuration
                             Current = bNumber,
                             KeyboardStep = 0.1f,
                         };
-
+                        bNumber.Disabled = valueStartsDisabled;
                         break;
 
                     case BindableNumber<int> bNumber:
+                        bNumber.Disabled = false;
                         yield return new SettingsSlider<int>
                         {
                             LabelText = attr.Label,
                             TooltipText = attr.Description,
                             Current = bNumber
                         };
-
+                        bNumber.Disabled = valueStartsDisabled;
                         break;
 
                     case Bindable<bool> bBool:
+                        bBool.Disabled = false;
                         yield return new SettingsCheckbox
                         {
                             LabelText = attr.Label,
                             TooltipText = attr.Description,
                             Current = bBool
                         };
-
+                        bBool.Disabled = valueStartsDisabled;
                         break;
 
                     case Bindable<string> bString:
+                        bString.Disabled = false;
                         yield return new SettingsTextBox
                         {
                             LabelText = attr.Label,
                             TooltipText = attr.Description,
                             Current = bString
                         };
-
+                        bString.Disabled = valueStartsDisabled;
                         break;
 
                     case IBindable bindable:

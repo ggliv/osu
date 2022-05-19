@@ -150,7 +150,38 @@ namespace osu.Game.Rulesets.Mods
                 var targetBindable = (IBindable)prop.GetValue(this);
                 var sourceBindable = (IBindable)prop.GetValue(source);
 
-                CopyAdjustedSetting(targetBindable, sourceBindable);
+                bool sourceBindableStartsDisabled = sourceBindable.Disabled;
+
+                switch ((object)targetBindable)
+                {
+                    case Bindable<double> d:
+                        d.Disabled = false;
+                        CopyAdjustedSetting(targetBindable, sourceBindable);
+                        d.Disabled = sourceBindableStartsDisabled;
+                        break;
+
+                    case Bindable<int> i:
+                        i.Disabled = false;
+                        CopyAdjustedSetting(targetBindable, sourceBindable);
+                        i.Disabled = sourceBindableStartsDisabled;
+                        break;
+
+                    case Bindable<float> f:
+                        f.Disabled = false;
+                        CopyAdjustedSetting(targetBindable, sourceBindable);
+                        f.Disabled = sourceBindableStartsDisabled;
+                        break;
+
+                    case Bindable<bool> b:
+                        b.Disabled = false;
+                        CopyAdjustedSetting(targetBindable, sourceBindable);
+                        b.Disabled = sourceBindableStartsDisabled;
+                        break;
+
+                    default: // no disabled checking/safety
+                        CopyAdjustedSetting(targetBindable, sourceBindable);
+                        break;
+                }
             }
         }
 
