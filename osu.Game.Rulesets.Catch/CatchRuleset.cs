@@ -135,6 +135,14 @@ namespace osu.Game.Rulesets.Catch
                         new CatchModNoScope(),
                     };
 
+                case ModType.Challenge:
+                    return new Mod[]
+                    {
+                        new CatchModAccuracyChallenge(),
+                        new CatchModHealthChallenge(),
+                        new CatchModJudgementChallenge(),
+                    };
+
                 default:
                     return Array.Empty<Mod>();
             }

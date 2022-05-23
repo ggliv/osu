@@ -261,6 +261,14 @@ namespace osu.Game.Rulesets.Mania
                         new ModAdaptiveSpeed()
                     };
 
+                case ModType.Challenge:
+                    return new Mod[]
+                    {
+                        new ManiaModAccuracyChallenge(),
+                        new ManiaModHealthChallenge(),
+                        new ManiaModJudgementChallenge(),
+                    };
+
                 default:
                     return Array.Empty<Mod>();
             }

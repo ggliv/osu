@@ -154,6 +154,14 @@ namespace osu.Game.Rulesets.Taiko
                         new ModAdaptiveSpeed()
                     };
 
+                case ModType.Challenge:
+                    return new Mod[]
+                    {
+                        new TaikoModAccuracyChallenge(),
+                        new TaikoModHealthChallenge(),
+                        new TaikoModJudgementChallenge(),
+                    };
+
                 default:
                     return Array.Empty<Mod>();
             }

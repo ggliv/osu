@@ -149,6 +149,11 @@ namespace osu.Game.Rulesets.UI
                     highlightedColour = colours.PinkLight;
                     break;
 
+                case ModType.Challenge:
+                    backgroundColour = colours.Orange1;
+                    highlightedColour = colours.Orange0;
+                    break;
+
                 case ModType.System:
                     backgroundColour = colours.Gray6;
                     highlightedColour = colours.Gray7;

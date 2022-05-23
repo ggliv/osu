@@ -180,6 +180,9 @@ namespace osu.Game.Graphics
                 case ModType.Fun:
                     return Pink1;
 
+                case ModType.Challenge:
+                    return Orange1;
+
                 case ModType.System:
                     return Gray7;
 

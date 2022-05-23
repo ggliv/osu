@@ -199,6 +199,14 @@ namespace osu.Game.Rulesets.Osu
                         new ModAdaptiveSpeed()
                     };
 
+                case ModType.Challenge:
+                    return new Mod[]
+                    {
+                        new OsuModAccuracyChallenge(),
+                        new OsuModHealthChallenge(),
+                        new OsuModJudgementChallenge(),
+                    };
+
                 case ModType.System:
                     return new Mod[]
                     {

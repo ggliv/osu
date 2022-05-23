@@ -162,7 +162,8 @@ namespace osu.Game.Overlays.Mods
                                     createModColumnContent(ModType.DifficultyIncrease, new[] { Key.A, Key.S, Key.D, Key.F, Key.G, Key.H, Key.J, Key.K, Key.L }),
                                     createModColumnContent(ModType.Automation, new[] { Key.Z, Key.X, Key.C, Key.V, Key.B, Key.N, Key.M }),
                                     createModColumnContent(ModType.Conversion),
-                                    createModColumnContent(ModType.Fun)
+                                    createModColumnContent(ModType.Fun),
+                                    createModColumnContent(ModType.Challenge),
                                 }
                             }
                         }
